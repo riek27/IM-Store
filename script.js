@@ -1,173 +1,156 @@
-// Common functionality for all pages
+// Mobile Navigation Toggle
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.getElementById('nav-links');
 
-// Mobile Menu Toggle
-const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-const nav = document.querySelector('nav');
+if (hamburger && navLinks) {
+    hamburger.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+    });
+}
 
-if (mobileMenuBtn && nav) {
-    mobileMenuBtn.addEventListener('click', () => {
-        nav.classList.toggle('active');
+// WhatsApp Widget Toggle
+const whatsappButton = document.getElementById('whatsappButton');
+const whatsappPopup = document.getElementById('whatsappPopup');
+const closePopup = document.getElementById('closePopup');
+
+if (whatsappButton && whatsappPopup) {
+    whatsappButton.addEventListener('click', () => {
+        whatsappPopup.classList.toggle('active');
+    });
+}
+
+if (closePopup) {
+    closePopup.addEventListener('click', () => {
+        whatsappPopup.classList.remove('active');
+    });
+}
+
+// Close popup when clicking outside
+document.addEventListener('click', (e) => {
+    if (whatsappButton && whatsappPopup && !whatsappButton.contains(e.target) && !whatsappPopup.contains(e.target)) {
+        whatsappPopup.classList.remove('active');
+    }
+});
+
+// Contact Form Submission
+const contactForm = document.getElementById('contactForm');
+
+if (contactForm) {
+    contactForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        alert('Thank you for your message! We will get back to you soon.');
+        contactForm.reset();
     });
 }
 
 // Header Scroll Effect
 window.addEventListener('scroll', () => {
     const header = document.querySelector('header');
-    if (header && window.scrollY > 50) {
-        header.classList.add('scrolled');
-    } else if (header) {
-        header.classList.remove('scrolled');
+    if (header) {
+        if (window.scrollY > 100) {
+            header.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.1)';
+            header.style.padding = '10px 0';
+        } else {
+            header.style.boxShadow = 'var(--box-shadow)';
+            header.style.padding = '15px 0';
+        }
     }
 });
 
-// Smooth scrolling for anchor links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function(e) {
-        e.preventDefault();
-        
-        const targetId = this.getAttribute('href');
-        if(targetId === '#') return;
-        
-        const targetElement = document.querySelector(targetId);
-        if(targetElement) {
-            window.scrollTo({
-                top: targetElement.offsetTop - 100,
-                behavior: 'smooth'
-            });
-            
-            // Close mobile menu if open
-            if (nav) {
-                nav.classList.remove('active');
-            }
-        }
+// Lightbox functionality
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+const lightboxClose = document.getElementById('lightboxClose');
+const lightboxPrev = document.getElementById('lightboxPrev');
+const lightboxNext = document.getElementById('lightboxNext');
+const projectCards = document.querySelectorAll('.project-card');
+
+let currentImageIndex = 0;
+const projectImages = [
+    'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
+    'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
+    'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
+    'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
+    'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
+    'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
+    'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
+    'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
+    'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'
+];
+
+// Open lightbox when project card is clicked
+projectCards.forEach((card, index) => {
+    card.addEventListener('click', () => {
+        currentImageIndex = index;
+        lightboxImg.src = projectImages[currentImageIndex];
+        lightbox.classList.add('active');
     });
 });
 
-// Fade in elements on scroll
-const fadeInOnScroll = () => {
-    const fadeElements = document.querySelectorAll('.product-card, .feature-card, .testimonial-card, .service-card, .mission-card, .vision-card, .stat-card');
-    
-    fadeElements.forEach(element => {
-        const elementTop = element.getBoundingClientRect().top;
-        const elementVisible = 150;
-        
-        if (elementTop < window.innerHeight - elementVisible) {
-            element.style.opacity = "1";
-            element.style.transform = "translateY(0)";
+// Close lightbox
+if (lightboxClose) {
+    lightboxClose.addEventListener('click', () => {
+        lightbox.classList.remove('active');
+    });
+}
+
+// Lightbox navigation
+if (lightboxPrev) {
+    lightboxPrev.addEventListener('click', () => {
+        currentImageIndex = (currentImageIndex - 1 + projectImages.length) % projectImages.length;
+        lightboxImg.src = projectImages[currentImageIndex];
+    });
+}
+
+if (lightboxNext) {
+    lightboxNext.addEventListener('click', () => {
+        currentImageIndex = (currentImageIndex + 1) % projectImages.length;
+        lightboxImg.src = projectImages[currentImageIndex];
+    });
+}
+
+// Close lightbox when clicking outside the image
+if (lightbox) {
+    lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) {
+            lightbox.classList.remove('active');
         }
     });
-};
-
-// Set initial state for fade elements
-const initFadeElements = () => {
-    const fadeElements = document.querySelectorAll('.product-card, .feature-card, .testimonial-card, .service-card, .mission-card, .vision-card, .stat-card');
-    
-    fadeElements.forEach(element => {
-        element.style.opacity = "0";
-        element.style.transform = "translateY(20px)";
-        element.style.transition = "opacity 0.6s ease, transform 0.6s ease";
-    });
-};
-
-// Initialize fade elements and set up scroll listener
-initFadeElements();
-window.addEventListener('scroll', fadeInOnScroll);
-// Initial check
-fadeInOnScroll();
-
-// Home page specific functionality
-if (document.querySelector('.hero-slideshow')) {
-    // Hero Slideshow
-    let currentSlide = 0;
-    const slides = document.querySelectorAll('.slide');
-    const totalSlides = slides.length;
-
-    function showSlide(n) {
-        slides.forEach(slide => slide.classList.remove('active'));
-        currentSlide = (n + totalSlides) % totalSlides;
-        slides[currentSlide].classList.add('active');
-    }
-
-    function nextSlide() {
-        showSlide(currentSlide + 1);
-    }
-
-    // Change slide every 5 seconds
-    setInterval(nextSlide, 5000);
 }
 
-// Products page specific functionality
-if (document.querySelector('.products-filter')) {
-    // Product filtering
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    const productCards = document.querySelectorAll('.product-card-catalog');
-    
-    filterButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            // Remove active class from all buttons
-            filterButtons.forEach(btn => btn.classList.remove('active'));
-            // Add active class to clicked button
-            button.classList.add('active');
-            
-            const filterValue = button.getAttribute('data-filter');
-            
-            productCards.forEach(card => {
-                if (filterValue === 'all' || card.getAttribute('data-category') === filterValue) {
-                    card.style.display = 'block';
-                    setTimeout(() => {
-                        card.style.opacity = '1';
-                        card.style.transform = 'translateY(0)';
-                    }, 100);
-                } else {
-                    card.style.opacity = '0';
-                    card.style.transform = 'translateY(20px)';
-                    setTimeout(() => {
-                        card.style.display = 'none';
-                    }, 300);
-                }
-            });
-        });
-    });
-}
+// Animate elements on scroll
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+};
 
-// Contact form handling
-if (document.querySelector('.contact-form')) {
-    const contactForm = document.querySelector('.contact-form');
-    
-    contactForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Get form data
-        const formData = new FormData(this);
-        const name = formData.get('name');
-        const email = formData.get('email');
-        const subject = formData.get('subject');
-        const message = formData.get('message');
-        
-        // Simple validation
-        if (!name || !email || !subject || !message) {
-            alert('Please fill in all fields');
-            return;
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.animation = 'fadeInUp 0.8s ease forwards';
+            observer.unobserve(entry.target);
         }
-        
-        // In a real application, you would send this data to a server
-        // For now, we'll just show a success message
-        alert('Thank you for your message! We will get back to you soon.');
-        this.reset();
     });
-}
+}, observerOptions);
 
-// Set active page in navigation
-document.addEventListener('DOMContentLoaded', function() {
-    const currentPage = window.location.pathname.split('/').pop();
-    const navLinks = document.querySelectorAll('nav a');
+// Observe service cards and mission cards
+document.addEventListener('DOMContentLoaded', () => {
+    const elementsToAnimate = document.querySelectorAll('.service-card, .mission-card');
+    elementsToAnimate.forEach(element => {
+        element.style.opacity = '0';
+        observer.observe(element);
+    });
+});
+
+// Set active navigation link based on current page
+document.addEventListener('DOMContentLoaded', () => {
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    const navLinks = document.querySelectorAll('.nav-links a');
     
     navLinks.forEach(link => {
         const linkHref = link.getAttribute('href');
         if (linkHref === currentPage || (currentPage === '' && linkHref === 'index.html')) {
             link.classList.add('active');
-        } else {
-            link.classList.remove('active');
         }
     });
 });
